@@ -5,7 +5,7 @@
     [clojure.string :as s])
   (:import [java.util Base64]
            [java.nio.charset StandardCharsets]
-           [java.time Instant]))
+           [java.time Instant Duration]))
 
 (defn- b64-decode [s]
   (String. (.decode (Base64/getUrlDecoder) s) StandardCharsets/ISO_8859_1))
@@ -21,6 +21,13 @@
      {::header (-> parsed first b64-decode parse-data-fn)
       ::payload (-> parsed second b64-decode parse-data-fn)
       ::signature (last parsed)})))
+
+(defn duration-remaining
+  ([parsed-token]
+   (duration-remaining (::payload parsed-token) (Instant/now)))
+  ([parsed-token now]
+   (if-let [exp (some-> parsed-token :exp Instant/ofEpochSecond)]
+     (Duration/between now exp))))
 
 (defn expired?
   ([parsed-token]
@@ -44,6 +51,7 @@
 
 (defn valid-token? [parse-json-fn pub-key token]
   ( = ::good-standing (validate-token parse-json-fn pub-key token)))
+
 
 ;; specs
 
