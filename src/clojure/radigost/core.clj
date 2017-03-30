@@ -10,9 +10,6 @@
 (defn- b64-decode [s]
   (String. (.decode (Base64/getUrlDecoder) s) StandardCharsets/ISO_8859_1))
 
-(defn- b64-encode [ba]
-  (.encodeToString (Base64/getUrlEncoder) ba))
-
 (defn parse-token
   ([token]
    (parse-token identity token))

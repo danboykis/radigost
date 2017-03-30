@@ -3,7 +3,9 @@
   (:import [java.util Base64]
            [java.security KeyFactory Signature]
            [java.security.spec X509EncodedKeySpec]
-           [java.nio.charset StandardCharsets]))
+           [java.nio.charset StandardCharsets]
+           [javax.crypto.spec SecretKeySpec]
+           [javax.crypto Mac]))
 
 (def ^:private BEGIN "-----BEGIN ")
 (def ^:private END "-----END ")
@@ -64,3 +66,12 @@
           data (subs token 0 i)
           sig (subs token (inc i))]
       (verify-signature sig pk data))))
+
+(defn- get-bytes [^String s]
+  (.getBytes s StandardCharsets/US_ASCII))
+
+(defn hmac-sha1 [^String key ^String data]
+  (let [signing-key (SecretKeySpec. (get-bytes key) "HmacSHA1")
+        mac (doto (Mac/getInstance "HmacSHA1") (.init signing-key))]
+    (-> (Base64/getEncoder)
+        (.encodeToString (.doFinal mac (get-bytes data))))))
