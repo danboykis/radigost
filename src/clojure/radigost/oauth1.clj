@@ -1,22 +1,12 @@
 (ns radigost.oauth1
   (:require [clojure.spec :as s]
             [clojure.string :as string]
+            [radigost.util :refer [url-encode]]
             [radigost.crypto :as rc])
   (:import [java.net URI URLEncoder URLDecoder]
            [java.time Instant]
            [java.security SecureRandom]
            [java.util Base64]))
-
-(defn- b64-encode [ba]
-  (.encodeToString (Base64/getUrlEncoder) ba))
-
-(defn url-encode [s]
-  (-> (URLEncoder/encode s "UTF-8")
-      (.replace "+" "%20")
-      (.replace "*" "%2A")
-      (.replace "%7E" "~")))
-
-(defn url-decode [s] (URLDecoder/decode s "UTF-8"))
 
 (defn parse-query-params [q]
   (into {} (filter #(= 2 (count %))) (map #(string/split % #"=") (some-> q (string/split #"&")))))
@@ -24,7 +14,6 @@
 (defn normalize-query-params [query]
   (string/join "&" (map (fn [[k v]] (str (name k) "=" (name v)))
                                 (sort query))))
-
 
 (defn conform-to-spec [spec data]
   (let [parsed (s/conform spec data)]
@@ -77,6 +66,8 @@
   (let [parsed (conform-to-spec ::params params)
         ts    (current-time!)
         nonce (generate-nonce!)
+
+        fields [:http-method :oauth_consumer_key :oauth_signature_method :oauth_timestamp :oauth_nonce :oauth_version]
         oauth-params (-> parsed
                          (clojure.set/rename-keys {:consumer-key :oauth_consumer_key :signature-method :oauth_signature_method})
                          (merge {:oauth_timestamp ts :oauth_nonce nonce :oauth_version "1.0"})
@@ -85,4 +76,4 @@
     (str "OAuth "
          (string/join ", "
                       (map (fn [[k v]] (str (name k) "=" (str \" v \")))
-                           (assoc oauth-params :oauth_signature sig))))))
+                           (assoc (select-keys oauth-params fields) :oauth_signature sig))))))

@@ -5,7 +5,8 @@
            [java.security.spec X509EncodedKeySpec]
            [java.nio.charset StandardCharsets]
            [javax.crypto.spec SecretKeySpec]
-           [javax.crypto Mac]))
+           [javax.crypto Mac]
+           [javax.xml.bind DatatypeConverter]))
 
 (def ^:private BEGIN "-----BEGIN ")
 (def ^:private END "-----END ")

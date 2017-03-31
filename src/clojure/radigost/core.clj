@@ -1,14 +1,11 @@
 (ns radigost.core
   (:require
     [radigost.crypto :refer [good-signature?]]
-    ;[clojure.spec :as spec])
+    [radigost.util :refer [b64-decode]]
     [clojure.string :as s])
   (:import [java.util Base64]
            [java.nio.charset StandardCharsets]
            [java.time Instant Duration]))
-
-(defn- b64-decode [s]
-  (String. (.decode (Base64/getUrlDecoder) s) StandardCharsets/ISO_8859_1))
 
 (defn parse-token
   ([token]
