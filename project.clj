@@ -1,4 +1,4 @@
-(defproject radigost "0.1.2-SNAPSHOT"
+(defproject radigost "0.1.3"
   :description "Work with JWT in Clojure"
   :url "https://github.com/danboykis/radigost"
   :license {:name "Unlicense" :url "http://unlicense.org/"}

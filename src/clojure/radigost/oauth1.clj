@@ -1,5 +1,5 @@
 (ns radigost.oauth1
-  (:require [clojure.spec :as s]
+  (:require [clojure.spec.alpha :as s]
             [clojure.string :as string]
             [radigost.util :refer [url-encode]]
             [radigost.crypto :as rc])
